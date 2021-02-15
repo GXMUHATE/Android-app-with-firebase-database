@@ -18,6 +18,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.squareup.picasso.OkHttpDownloader;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +39,19 @@ public class ImagesActivity extends AppCompatActivity implements ImageAdapter.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_images);
 
+
+/*FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+        Picasso.Builder builder = new Picasso.Builder(this);
+        builder.downloader(new OkHttpDownloader(this, Integer.MAX_VALUE));
+        Picasso built = builder.build();
+        built.setIndicatorsEnabled(false);
+        built.setLoggingEnabled(true);
+        Picasso.setSingletonInstance(built);*/
+
+
+
+
+
         mRecyclerView = findViewById(R.id.recycler_view);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -54,6 +69,7 @@ public class ImagesActivity extends AppCompatActivity implements ImageAdapter.On
         mStorage = FirebaseStorage.getInstance();
 
         mDatabaseRef = FirebaseDatabase.getInstance().getReference("uploads");
+        mDatabaseRef.keepSynced(true);
 
         mDBListener = mDatabaseRef.addValueEventListener(new ValueEventListener() {
 

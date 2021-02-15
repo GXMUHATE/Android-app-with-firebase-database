@@ -13,6 +13,10 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.database.FirebaseDatabase;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.NetworkPolicy;
+import com.squareup.picasso.OkHttpDownloader;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -32,6 +36,7 @@ public class ImageAdapter extends RecyclerView.Adapter <ImageAdapter.ImageViewHo
     public ImageViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(mContext).inflate(R.layout.image_item, parent, false);
         return new ImageViewHolder(v);
+
     }
 
     @Override
@@ -41,12 +46,27 @@ public class ImageAdapter extends RecyclerView.Adapter <ImageAdapter.ImageViewHo
         holder.textViewUploaderName.setText(uploadCurrent.getUploaderName());
         holder.textViewUploaderSurname.setText(uploadCurrent.getUploaderSurname());
         holder.textViewUploaderEmail.setText(uploadCurrent.getUploaderEmail());
-        Picasso.with(mContext)
-                .load(uploadCurrent.getImageUrl())
-                .placeholder(R.mipmap.ic_launcher)
-                .fit()
-                .centerCrop()
-                .into(holder.imageView);
+
+
+        Picasso.with( mContext).load(uploadCurrent.getImageUrl()).networkPolicy(NetworkPolicy.OFFLINE).into(holder.imageView, new Callback() {
+            @Override
+            public void onSuccess() {
+
+            }
+
+            @Override
+            public void onError() {
+
+                Picasso.with(mContext)
+                        .load(uploadCurrent.getImageUrl())
+                        .placeholder(R.mipmap.ic_launcher)
+                        .fit()
+                        .centerCrop()
+                        .into(holder.imageView);
+            }
+        });
+
+
     }
 
     @Override
@@ -61,8 +81,13 @@ public class ImageAdapter extends RecyclerView.Adapter <ImageAdapter.ImageViewHo
         public TextView textViewUploaderSurname;
         public TextView textViewUploaderEmail;
         public ImageView imageView;
+
+
+
         public ImageViewHolder(View itemView){
             super(itemView);
+
+
 
             textViewName = itemView.findViewById(R.id.text_view_name);
             textViewUploaderName = itemView.findViewById(R.id.text_view_uploadername);

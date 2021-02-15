@@ -5,6 +5,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -30,6 +31,9 @@ import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StorageTask;
 import com.google.firebase.storage.UploadTask;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.NetworkPolicy;
+import com.squareup.picasso.OkHttpDownloader;
 import com.squareup.picasso.Picasso;
 
 import java.security.PrivateKey;
@@ -63,6 +67,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
         mButtonChooseImage = findViewById(R.id.button_choose_image);
         mButtonUpload = findViewById(R.id.button);
         mTextViewShowUploads = findViewById(R.id.text_view_show_uploads);
@@ -75,8 +80,11 @@ public class MainActivity extends AppCompatActivity {
         mImageView = findViewById(R.id.imageView);
         mProgressBar = findViewById(R.id.progress_bar);
 
+
         mStorageRef = FirebaseStorage.getInstance().getReference("uploads");
         mDatabaseRef = FirebaseDatabase.getInstance().getReference("uploads");
+       mDatabaseRef.keepSynced(true);
+
 
         mButtonChooseImage.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -120,8 +128,21 @@ public class MainActivity extends AppCompatActivity {
         if(requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK
             && data != null && data.getData() != null){
             mImageUri = data.getData();
+           // Picasso.with(this).load(mImageUri).into(mImageView);
+//alteracoes
+            
+            Picasso.with(this).load(mImageUri).networkPolicy(NetworkPolicy.OFFLINE).into(mImageView, new Callback() {
+                @Override
+                public void onSuccess() {
 
-            Picasso.with(this).load(mImageUri).into(mImageView);
+                }
+
+                @Override
+                public void onError() {
+
+                    Picasso.with( getApplicationContext()).load(mImageUri).into(mImageView);
+                }
+            });
         }
     }
 
@@ -133,6 +154,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void uploadFile(){
         if(mImageUri != null){
+            mDatabaseRef.keepSynced(true);
             StorageReference fileReference = mStorageRef.child(String.valueOf(System.currentTimeMillis())
                     + "."+ getFileExtension(mImageUri));
             mUploadTask = fileReference.putFile(mImageUri)
