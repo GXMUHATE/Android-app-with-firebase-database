@@ -1,1 +1,21 @@
+# contains generated code like api keys extracted from json file
 /build
+
+# Google Services file from Firebase
+google-services.json
+
+# My local properties
+/local.properties
+
+*.iml
+.gradle
+/.idea/caches
+/.idea/libraries
+/.idea/modules.xml
+/.idea/workspace.xml
+/.idea/navEditor.xml
+/.idea/assetWizardSettings.xml
+.DS_Store
+/captures
+.externalNativeBuild
+.cxx
