@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -39,6 +40,10 @@ public class ImagesActivity extends AppCompatActivity implements ImageAdapter.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_images);
 
+        // Set up back key on actionBar
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_back);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
 
 /*FirebaseDatabase.getInstance().setPersistenceEnabled(true);
         Picasso.Builder builder = new Picasso.Builder(this);
@@ -126,5 +131,15 @@ public class ImagesActivity extends AppCompatActivity implements ImageAdapter.On
     protected void onDestroy() {
         super.onDestroy();
         mDatabaseRef.removeEventListener(mDBListener);
+    }
+
+    // To go back when action bar 'back' icon pressed
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            onBackPressed();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }
