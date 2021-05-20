@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.webkit.MimeTypeMap;
@@ -19,6 +20,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -39,6 +41,8 @@ import com.squareup.picasso.Picasso;
 public class UploadImageActivity extends AppCompatActivity {
 
     private static final int PICK_IMAGE_REQUEST = 1;
+
+    private static final String TAG = "UploadImageActivity";
 
     private Button mButtonChooseImage;
     private Button mButtonUpload;
@@ -112,8 +116,8 @@ public class UploadImageActivity extends AppCompatActivity {
                 } else {
                     // Don't exist! Do something.
                     uploadFile(fileName, uploaderName, uploaderSurname, uploaderEmail);
-                    // TODO (Optional): Implement on back pressed so that when upload is done, the app returns to the previous screen
-                    // onBackPressed()
+                    Toast.makeText(UploadImageActivity.this, "Uploading...", Toast.LENGTH_LONG).show();
+                    onBackPressed();
                 }
             }
 
@@ -169,8 +173,14 @@ public class UploadImageActivity extends AppCompatActivity {
                         upload.setKey(key);
 
                         // String uploadId = mDatabaseRef.push().getKey();
-                        mDatabaseRef.child(key).setValue(upload);
-                        Toast.makeText(UploadImageActivity.this, "Upload Successfull", Toast.LENGTH_LONG).show();
+                        mDatabaseRef.child(key).setValue(upload)
+                                .addOnCompleteListener(task -> {
+                                    if (task.isSuccessful()) {
+                                        Toast.makeText(UploadImageActivity.this, "Upload by " + uploaderEmail + " was made successfully", Toast.LENGTH_LONG).show();
+                                    } else {
+                                        Toast.makeText(UploadImageActivity.this, "Error uploading", Toast.LENGTH_LONG).show();
+                                    }
+                                });
 
                     })
                     .addOnFailureListener(e -> Toast.makeText(UploadImageActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show())
